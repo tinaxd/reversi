@@ -1,5 +1,22 @@
 #lang racket
 
+(provide
+ disk-none
+ disk-black
+ disk-white
+ opposite-disk
+ init-board
+ clone-board
+ board-count
+ board-get
+ board-set!
+ board-test
+ board-apply-test-result!
+ board-apply-test-result
+ board-put!
+ board-put
+ board-who-wins)
+
 (define disk-none 0)
 (define disk-black 1)
 (define disk-white 2)
@@ -17,6 +34,9 @@
     (vector-set! board 28 disk-black)
     (vector-set! board 35 disk-black)
     board))
+
+(define (clone-board board)
+  (vector-copy board))
 
 (define (board-count board)
   (let ([pred (lambda (x) (lambda (y) (= x y)))])
@@ -75,15 +95,28 @@
               (cons pos res)))
         null)))
 
+(define (board-apply-test-result! board result disk)
+  (if (null? result)
+      0
+      (begin
+        (for-each (lambda (p)
+                    (board-set! board p disk))
+                  result)
+        (length result))))
+
+(define (board-apply-test-result board result disk)
+  (let ([new-board (clone-board board)])
+    (board-apply-test-result! new-board result disk)
+    new-board))
+
 (define (board-put! board pos disk)
   (let ([result (board-test board pos disk)])
-    (if (null? result)
-        0
-        (begin
-          (for-each (lambda (p)
-                      (board-set! board p disk))
-                    result)
-          (length result)))))
+    (board-apply-test-result! board result disk)))
+
+(define (board-put board pos disk)
+  (let ([new-board (clone-board board)])
+    (board-put! new-board pos disk)
+    new-board))
 
 (define (board-who-wins board)
   (define (board-finish? board)
