@@ -21,7 +21,7 @@
     (define/public (get-board) current-board)
     (define/public (set-board b) (set! current-board b))
     (define/public (aiturn)
-      (let ([ai-choice (ai-decide current-board current-turn 4)])
+      (let ([ai-choice (ai-decide current-board current-turn 6)])
         (when (and ai-choice (not (= ai-choice -1))) (board-put! current-board ai-choice current-turn)))
       (change-turn!)
       (send this refresh))

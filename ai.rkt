@@ -27,7 +27,15 @@
 
 (define (count-evaluator ai)
   (lambda (board)
-    (length (filter (lambda (i) (= ai (board-get board i))) (stream->list (in-range 64))))))
+    (foldl + 0 (map (lambda (i)
+                      (let* ([row (floor (/ i 8))]
+                             [col (modulo i 8)]
+                             [score (* 10(+ (abs (- 4 row)) (abs (- 4 col))))]
+                             [cell (board-get board i)])
+                        (cond
+                          [(= cell disk-none) 0]
+                          [(= cell ai) score]
+                          [else (- score)]))) (stream->list (in-range 64))))))
 
 (define (alpha-beta board depth ai next-disk alpha beta static-evaluate)
   (let ([children (children-boards board next-disk)])
